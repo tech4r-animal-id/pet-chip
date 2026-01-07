@@ -1,6 +1,6 @@
 import { db } from '@repo/db';
 import { animals, vaccinations, animalHealthRecords, holdings } from '@repo/db';
-import { sql, eq, and, gte, lte, count } from 'drizzle-orm';
+import { sql, eq, and, count } from 'drizzle-orm';
 import type { VaccinationCoverageParams } from '../types/api';
 
 /**
@@ -12,8 +12,12 @@ import type { VaccinationCoverageParams } from '../types/api';
  * Get vaccination coverage report
  */
 export async function getVaccinationCoverage(params: VaccinationCoverageParams) {
-    const startDate = params.startDate ? new Date(params.startDate) : new Date(new Date().setMonth(new Date().getMonth() - 12));
-    const endDate = params.endDate ? new Date(params.endDate) : new Date();
+    const startDateObj = params.startDate ? new Date(params.startDate) : new Date(new Date().setMonth(new Date().getMonth() - 12));
+    const endDateObj = params.endDate ? new Date(params.endDate) : new Date();
+
+    // Convert to string format for date column comparison
+    const startDate = startDateObj.toISOString().split('T')[0];
+    const endDate = endDateObj.toISOString().split('T')[0];
 
     // Get total animals
     const totalAnimalsQuery = db
@@ -29,8 +33,8 @@ export async function getVaccinationCoverage(params: VaccinationCoverageParams) 
         .where(
             and(
                 eq(animals.status, 'Alive'),
-                gte(animalHealthRecords.recordDate, startDate),
-                lte(animalHealthRecords.recordDate, endDate),
+                sql`${animalHealthRecords.recordDate} >= ${startDate}`,
+                sql`${animalHealthRecords.recordDate} <= ${endDate}`,
                 sql`${animalHealthRecords.diagnosis} LIKE '%vaccin%' OR ${animalHealthRecords.treatmentAdministered} LIKE '%vaccin%'`
             )
         );
@@ -62,8 +66,8 @@ export async function getVaccinationCoverage(params: VaccinationCoverageParams) 
                 animalHealthRecords,
                 and(
                     eq(animalHealthRecords.animalId, animals.animalId),
-                    gte(animalHealthRecords.recordDate, startDate),
-                    lte(animalHealthRecords.recordDate, endDate)
+                    sql`${animalHealthRecords.recordDate} >= ${startDate}`,
+                    sql`${animalHealthRecords.recordDate} <= ${endDate}`
                 )
             )
             .where(
@@ -96,8 +100,8 @@ export async function getVaccinationCoverage(params: VaccinationCoverageParams) 
                 animalHealthRecords,
                 and(
                     eq(animalHealthRecords.animalId, animals.animalId),
-                    gte(animalHealthRecords.recordDate, startDate),
-                    lte(animalHealthRecords.recordDate, endDate)
+                    sql`${animalHealthRecords.recordDate} >= ${startDate}`,
+                    sql`${animalHealthRecords.recordDate} <= ${endDate}`
                 )
             )
             .where(eq(animals.status, 'Alive'))
@@ -119,8 +123,8 @@ export async function getVaccinationCoverage(params: VaccinationCoverageParams) 
             vaccinatedAnimals,
             coverageRate: Number(coverageRate.toFixed(3)),
             dateRange: {
-                start: startDate.toISOString().split('T')[0],
-                end: endDate.toISOString().split('T')[0],
+                start: startDate,
+                end: endDate,
             },
         },
         details,

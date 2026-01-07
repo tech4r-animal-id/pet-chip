@@ -111,7 +111,7 @@ export async function searchAnimal(params: AnimalSearchParams) {
                         orderBy: (vaccinations, { desc }) => [desc(vaccinations.administrationDate)],
                     },
                     healthRecords: {
-                        orderBy: (healthRecords, ({ desc }) => [desc(healthRecords.recordDate)]),
+                        orderBy: (healthRecords, { desc }) => [desc(healthRecords.recordDate)],
                     },
                     ownershipHistory: {
                         where: (ownershipHistory, { eq }) => eq(ownershipHistory.isCurrentOwner, true),
@@ -142,7 +142,7 @@ export async function searchAnimal(params: AnimalSearchParams) {
                 orderBy: (vaccinations, { desc }) => [desc(vaccinations.administrationDate)],
             },
             healthRecords: {
-                orderBy: (healthRecords, ({ desc }) => [desc(healthRecords.recordDate)]),
+                orderBy: (healthRecords, { desc }) => [desc(healthRecords.recordDate)],
             },
             ownershipHistory: {
                 where: (ownershipHistory, { eq }) => eq(ownershipHistory.isCurrentOwner, true),
@@ -177,7 +177,7 @@ export async function getAnimalById(id: string) {
                 orderBy: (vaccinations, { desc }) => [desc(vaccinations.administrationDate)],
             },
             healthRecords: {
-                orderBy: (healthRecords, ({ desc }) => [desc(healthRecords.recordDate)]),
+                orderBy: (healthRecords, { desc }) => [desc(healthRecords.recordDate)],
             },
             ownershipHistory: {
                 where: (ownershipHistory, { eq }) => eq(ownershipHistory.isCurrentOwner, true),
