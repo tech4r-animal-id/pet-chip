@@ -11,20 +11,29 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
-
 # Testing
 coverage
 
 # Turbo
 .turbo
+.env
+turbo.log
+dist
 
-# Vercel
+# Docker
+docker-compose.override.yml
+.env.local
+.env.*.local
+
+# Database
+packages/db/drizzle/
+*.db
+*.sqlite
 .vercel
 
 # Build Outputs
 .next/
 out/
-build
 dist
 
 
