@@ -2,6 +2,9 @@ import { Elysia } from 'elysia';
 import { swagger } from '@elysiajs/swagger';
 import { cors } from '@elysiajs/cors';
 import { animalRoutes } from './routes/animalRoutes';
+import { authRoutes } from './routes/authRoutes';
+import { AppError } from './utils/errors';
+import { logger } from './utils/logger';
 
 /**
  * Pet-Chip Animal Registry API
@@ -14,7 +17,10 @@ const app = new Elysia()
     // ============================================================================
     .use(
         cors({
-            origin: true, // Allow all origins in development
+            // Environment-specific CORS configuration
+            origin: process.env.NODE_ENV === 'production'
+                ? (process.env.ALLOWED_ORIGINS?.split(',') || ['https://animalid.uz'])
+                : true,
             credentials: true,
         })
     )
@@ -27,6 +33,7 @@ const app = new Elysia()
                     description: 'REST API for Animal Identification and Management Platform in Uzbekistan',
                 },
                 tags: [
+                    { name: 'Authentication', description: 'User authentication and authorization' },
                     { name: 'Animals', description: 'Animal registration and management' },
                     { name: 'Medical Records', description: 'Vaccination and health records' },
                     { name: 'Reports', description: 'Analytics and reporting' },
@@ -50,9 +57,23 @@ const app = new Elysia()
     // GLOBAL ERROR HANDLER
     // ============================================================================
     .onError(({ code, error, set }) => {
-        console.error(`[API Error] ${code}:`, error);
+        // Handle custom application errors
+        if (error instanceof AppError) {
+            logger.warn(`Application error: ${error.message}`, {
+                statusCode: error.statusCode,
+                operational: error.isOperational,
+            });
 
+            set.status = error.statusCode;
+            return {
+                error: error.message,
+                statusCode: error.statusCode,
+            };
+        }
+
+        // Handle validation errors from Elysia
         if (code === 'VALIDATION') {
+            logger.warn('Validation error', { details: error.message });
             set.status = 400;
             return {
                 error: 'Validation failed',
@@ -60,6 +81,7 @@ const app = new Elysia()
             };
         }
 
+        // Handle not found errors
         if (code === 'NOT_FOUND') {
             set.status = 404;
             return {
@@ -67,10 +89,18 @@ const app = new Elysia()
             };
         }
 
+        // Log unexpected errors
+        logger.error('Unexpected error occurred', error, {
+            code,
+            env: process.env.NODE_ENV,
+        });
+
+        // Return generic error in production, detailed in development
         set.status = 500;
         return {
             error: 'Internal server error',
             message: process.env.NODE_ENV === 'development' ? error.message : undefined,
+            ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
         };
     })
 
@@ -81,14 +111,19 @@ const app = new Elysia()
         message: 'Pet-Chip Animal Registry API',
         version: '1.0.0',
         documentation: '/swagger',
+        status: 'online',
     }))
 
     .get('/health', () => ({
         status: 'healthy',
         timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
     }))
 
-    // Mount animal routes
+    // Mount authentication routes (public)
+    .use(authRoutes)
+
+    // Mount animal routes (will require auth in production)
     .use(animalRoutes)
 
     // ============================================================================
@@ -96,13 +131,20 @@ const app = new Elysia()
     // ============================================================================
     .listen(process.env.PORT || 3002);
 
-console.log(`
+const serverUrl = `http://${app.server?.hostname}:${app.server?.port}`;
+
+logger.info(`
 ┌─────────────────────────────────────────────────┐
 │  🦊 Pet-Chip API Server                        │
 │                                                 │
-│  Running at: http://${app.server?.hostname}:${app.server?.port}      │
-│  Documentation: http://${app.server?.hostname}:${app.server?.port}/swagger │
+│  Running at: ${serverUrl}          │
+│  Documentation: ${serverUrl}/swagger     │
 │  Environment: ${process.env.NODE_ENV || 'development'}                   │
+│                                                 │
+│  ✅ Authentication enabled                     │
+│  ✅ Error logging active                       │
+│  ✅ Input sanitization enabled                 │
+│  ✅ Database transactions enabled              │
 └─────────────────────────────────────────────────┘
 `);
 

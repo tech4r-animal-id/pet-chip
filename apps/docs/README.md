@@ -1,8 +1,19 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/create-next-app).
+# Pet-Chip Documentation
+
+A comprehensive documentation site built with Next.js 16 for the Pet-Chip Animal Identification Platform.
+
+## Features
+
+- ✅ Getting Started Guide
+- ✅ Complete API Reference  
+- ✅ Architecture Documentation
+- ✅ Database Schema Guide
+- ✅ Deployment Instructions
+- ✅ Development Guidelines
 
 ## Getting Started
 
-First, run the development server:
+Run the development server:
 
 ```bash
 npm run dev
