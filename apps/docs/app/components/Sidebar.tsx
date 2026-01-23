@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { memo } from 'react';
 
 interface NavItem {
   title: string;
@@ -108,3 +109,5 @@ export function Sidebar() {
     </nav>
   );
 }
+
+export default memo(Sidebar);

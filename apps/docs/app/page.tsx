@@ -1,5 +1,9 @@
 import Link from 'next/link';
-import { Sidebar } from './components/Sidebar';
+import dynamic from 'next/dynamic';
+
+const Sidebar = dynamic(() => import('./components/Sidebar'), {
+  loading: () => <div className="w-64 min-h-screen bg-gray-50 border-r" />,
+});
 
 export default function Home() {
   return (
