@@ -1,135 +1,330 @@
-# Turborepo starter
+# Pet-Chip 🐾
 
-This Turborepo starter is maintained by the Turborepo core team.
+**Animal Identification and Management Platform for Uzbekistan**
 
-## Using this example
+A comprehensive system for tracking livestock and pets through microchip registration, health records, vaccination monitoring, and movement tracking across administrative regions.
 
-Run the following command:
+## 🚀 Features
 
-```sh
-npx create-turbo@latest
+- **Animal Registry** - Complete animal identification with microchip validation (ISO 11784/11785)
+- **Health Records** - Vaccination tracking, medical history, and health status monitoring
+- **Movement Tracking** - Animal transfers between holdings with approval workflow
+- **Administrative Hierarchy** - Region → District → Municipality management
+- **Holdings Management** - Farms, households, and commercial enterprises
+- **Analytics & Reports** - Vaccination coverage, statistics, and compliance reports
+- **Role-Based Access** - System Admin, Government Officer, Veterinarian, Farmer, Citizen
+- **API-First Design** - RESTful API with comprehensive Swagger documentation
+
+## 📦 What's Inside?
+
+This Turborepo monorepo includes the following applications and packages:
+
+### Applications
+
+- **`api`** - ElysiaJS REST API with Bun runtime (Port 3002)
+- **`admin`** - Next.js admin dashboard for system management (Port 3003)
+- **`web`** - Next.js public-facing website (Port 3000)
+- **`docs`** - Next.js documentation site (Port 3001)
+- **`queue`** - Background job processor for notifications and reports
+
+### Shared Packages
+
+- **`@repo/db`** - Database schemas, Drizzle ORM, and migrations
+- **`@repo/ui`** - Shared React component library
+- **`@repo/eslint-config`** - ESLint configurations
+- **`@repo/typescript-config`** - TypeScript configurations
+
+All applications and packages are written in [TypeScript](https://www.typescriptlang.org/).
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **Next.js 16** - React framework with App Router
+- **React 19** - UI library
+- **Tailwind CSS v4** - Utility-first styling
+- **TypeScript 5** - Type safety
+
+### Backend
+- **Bun** - Fast JavaScript runtime
+- **ElysiaJS** - Type-safe web framework
+- **Drizzle ORM** - Type-safe SQL ORM
+- **PostgreSQL 16** - Primary database
+- **TimescaleDB** - Time-series data
+- **Redis 7** - Caching and sessions
+
+### Development Tools
+- **Turborepo** - Build system and monorepo management
+- **pnpm** - Fast, disk-efficient package manager
+- **Docker** - Containerization
+- **ESLint & Prettier** - Code quality
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have installed:
+
+- **Node.js 18+** - JavaScript runtime
+- **pnpm** - Package manager (`npm install -g pnpm`)
+- **Docker Desktop** - For PostgreSQL, TimescaleDB, and Redis
+- **Git** - Version control
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd pet-chip
 ```
 
-## What's inside?
+### 2. Install Dependencies
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```bash
+pnpm install
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 3. Start Docker Services
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+Start PostgreSQL, TimescaleDB, and Redis:
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+pnpm run docker:up
 ```
 
-### Develop
+Verify services are running:
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+pnpm run docker:ps
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 4. Set Up Database
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+Push the database schema:
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+pnpm run --filter=@repo/db db:push
 ```
 
-### Remote Caching
+### 5. Start Development Servers
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+Start all applications:
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+```bash
+pnpm run dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Or start individual applications:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+```bash
+# API Server
+pnpm run --filter=api dev
+
+# Admin Dashboard
+pnpm run --filter=admin dev
+
+# Documentation
+pnpm run --filter=docs dev
+
+# Public Web
+pnpm run --filter=web dev
+```
+
+### 6. Access Applications
+
+- **API Server:** http://localhost:3002
+- **API Documentation:** http://localhost:3002/swagger
+- **Admin Dashboard:** http://localhost:3003
+- **Documentation:** http://localhost:3001
+- **Public Web:** http://localhost:3000
+
+## 📖 Documentation
+
+For detailed documentation, visit http://localhost:3001 after starting the docs app, or see:
+
+- [Getting Started Guide](./SETUP.md)
+- [Database Setup](./DATABASE_SETUP.md)
+- API Documentation: http://localhost:3002/swagger
+
+## 🏗️ Project Structure
 
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+pet-chip/
+├── apps/
+│   ├── api/                 # ElysiaJS REST API
+│   ├── admin/               # Next.js admin dashboard
+│   ├── web/                 # Next.js public website
+│   ├── docs/                # Next.js documentation
+│   └── queue/               # Background job processor
+├── packages/
+│   ├── db/                  # Database schemas & Drizzle ORM
+│   ├── ui/                  # Shared React components
+│   ├── eslint-config/       # ESLint configurations
+│   └── typescript-config/   # TypeScript configurations
+├── docker/                  # Docker initialization scripts
+├── docker-compose.yml       # Service orchestration
+└── .env                     # Environment variables
 ```
 
-## Useful Links
+## 🔨 Available Scripts
 
-Learn more about the power of Turborepo:
+### Development
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+```bash
+pnpm run dev              # Start all apps in development mode
+pnpm run build            # Build all apps
+pnpm run lint             # Lint all apps
+pnpm run format           # Format code with Prettier
+pnpm run check-types      # Type check all packages
+```
+
+### Docker Commands
+
+```bash
+pnpm run docker:up        # Start Docker services
+pnpm run docker:down      # Stop Docker services
+pnpm run docker:ps        # Check service status
+pnpm run docker:logs      # View service logs
+pnpm run docker:reset     # Reset all services and data
+```
+
+### Database Commands
+
+```bash
+# Run in packages/db or use --filter
+pnpm run --filter=@repo/db db:push      # Push schema to database
+pnpm run --filter=@repo/db db:generate  # Generate migrations
+pnpm run --filter=@repo/db db:migrate   # Run migrations
+pnpm run --filter=@repo/db db:studio    # Open Drizzle Studio
+```
+
+## 🎯 Build
+
+Build all applications for production:
+
+```bash
+pnpm run build
+```
+
+Build specific application:
+
+```bash
+pnpm run build --filter=api
+pnpm run build --filter=admin
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests for specific package
+pnpm run --filter=api test
+
+# Watch mode
+pnpm test --watch
+```
+
+## 🐛 Common Issues
+
+### Database Connection Error
+
+If you see "relation does not exist" errors:
+
+```bash
+# Reset database and push schema again
+pnpm run docker:reset
+pnpm run --filter=@repo/db db:push
+```
+
+### Port Already in Use
+
+Change port in package.json or kill the process:
+
+```powershell
+# Windows
+Get-Process -Id (Get-NetTCPConnection -LocalPort 3002).OwningProcess | Stop-Process
+```
+
+### Docker Not Running
+
+Ensure Docker Desktop is running before starting services.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+## 📝 Environment Variables
+
+Key environment variables (see `.env` for complete list):
+
+```bash
+# Database
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/petchip
+
+# Authentication
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=1h
+
+# Application
+NODE_ENV=development
+PORT=3002
+```
+
+## 🔐 Security
+
+- JWT token authentication
+- Role-based access control (RBAC)
+- Input sanitization and validation
+- SQL injection prevention via Drizzle ORM
+- Password hashing with bcrypt
+- CORS configuration
+
+## 📊 Database Schema
+
+The system includes 10 core tables:
+
+- **users** - System users with role-based access
+- **administrative_areas** - Hierarchical geographic regions
+- **holdings** - Farms, households, and enterprises
+- **animals** - Central animal registry
+- **chips** - Microchip tracking
+- **vaccinations** - Vaccination records
+- **animal_health_records** - Medical history
+- **animal_movements** - Transfer tracking
+- **ownership_history** - Ownership audit trail
+- **alerts** - Lost/found notifications
+
+## 🌐 Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for production deployment instructions including:
+
+- Docker production setup
+- Environment configuration
+- SSL/TLS setup
+- Database backups
+- CI/CD pipelines
+
+## 📚 Additional Resources
+
+- [Turborepo Documentation](https://turborepo.com/docs)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [ElysiaJS Documentation](https://elysiajs.com)
+- [Drizzle ORM Documentation](https://orm.drizzle.team)
+
+## 📄 License
+
+[Add your license here]
+
+## 👥 Team
+
+Developed by a team of 21 developers for the Uzbekistan Animal Identification Platform.
+
+---
+
+**Built with ❤️ using Turborepo, Next.js, ElysiaJS, and Bun**
