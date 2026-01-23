@@ -320,11 +320,3 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for production deployment instructions incl
 ## 📄 License
 
 [Add your license here]
-
-## 👥 Team
-
-Developed by a team of 21 developers for the Uzbekistan Animal Identification Platform.
-
----
-
-**Built with ❤️ using Turborepo, Next.js, ElysiaJS, and Bun**
