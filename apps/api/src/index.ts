@@ -5,6 +5,8 @@ import { animalRoutes } from './routes/animalRoutes';
 import { authRoutes } from './routes/authRoutes';
 import { chipRoutes } from './routes/chipRoutes';
 import { lookupRoutes } from './routes/lookupRoutes';
+import { ownerRoutes } from './routes/ownerRoutes';
+import { lostFoundRoutes } from './routes/lostFoundRoutes';
 import { AppError } from './utils/errors';
 import { logger } from './utils/logger';
 
@@ -38,6 +40,8 @@ const app = new Elysia()
                     { name: 'Authentication', description: 'User authentication and authorization' },
                     { name: 'Animals', description: 'Animal registration and management' },
                     { name: 'Chips', description: 'Microchip assignment and management' },
+                    { name: 'Owners', description: 'Owner and holding registration' },
+                    { name: 'Lost & Found', description: 'Lost and found animal alerts' },
                     { name: 'Lookup', description: 'Public lookup services for lost/found animals' },
                     { name: 'Medical Records', description: 'Vaccination and health records' },
                     { name: 'Reports', description: 'Analytics and reporting' },
@@ -135,6 +139,12 @@ const app = new Elysia()
 
     // Mount lookup routes (public)
     .use(lookupRoutes)
+
+    // Mount owner routes
+    .use(ownerRoutes)
+
+    // Mount lost & found routes
+    .use(lostFoundRoutes)
 
     // ============================================================================
     // START SERVER
