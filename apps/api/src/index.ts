@@ -3,6 +3,8 @@ import { swagger } from '@elysiajs/swagger';
 import { cors } from '@elysiajs/cors';
 import { animalRoutes } from './routes/animalRoutes';
 import { authRoutes } from './routes/authRoutes';
+import { chipRoutes } from './routes/chipRoutes';
+import { lookupRoutes } from './routes/lookupRoutes';
 import { AppError } from './utils/errors';
 import { logger } from './utils/logger';
 
@@ -35,6 +37,8 @@ const app = new Elysia()
                 tags: [
                     { name: 'Authentication', description: 'User authentication and authorization' },
                     { name: 'Animals', description: 'Animal registration and management' },
+                    { name: 'Chips', description: 'Microchip assignment and management' },
+                    { name: 'Lookup', description: 'Public lookup services for lost/found animals' },
                     { name: 'Medical Records', description: 'Vaccination and health records' },
                     { name: 'Reports', description: 'Analytics and reporting' },
                     { name: 'Integrations', description: 'External service integrations' },
@@ -125,6 +129,12 @@ const app = new Elysia()
 
     // Mount animal routes (will require auth in production)
     .use(animalRoutes)
+
+    // Mount chip routes
+    .use(chipRoutes)
+
+    // Mount lookup routes (public)
+    .use(lookupRoutes)
 
     // ============================================================================
     // START SERVER
