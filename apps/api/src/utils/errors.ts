@@ -1,8 +1,3 @@
-/**
- * Custom Error Classes
- * Provides type-safe error handling with HTTP status codes
- */
-
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;

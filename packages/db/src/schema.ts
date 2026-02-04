@@ -14,9 +14,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-// ============================================================================
-// ENUMS
-// ============================================================================
+
+
+
 
 export const areaTypeEnum = pgEnum("area_type", [
     "Region",
@@ -88,14 +88,10 @@ export const userRoleEnum = pgEnum("user_role", [
 
 export const userStatusEnum = pgEnum("user_status", ["Active", "Inactive"]);
 
-// ============================================================================
-// TABLES
-// ============================================================================
 
-/**
- * Table 1: Administrative Areas
- * Hierarchical structure for regions, districts, and municipalities
- */
+
+
+
 export const administrativeAreas = pgTable("administrative_areas", {
     areaId: serial("area_id").primaryKey(),
     areaName: varchar("area_name", { length: 100 }).notNull(),
@@ -105,10 +101,7 @@ export const administrativeAreas = pgTable("administrative_areas", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
-/**
- * Table 2: Users
- * System users including citizens, veterinarians, and government officers
- */
+
 export const users = pgTable("users", {
     userId: uuid("user_id").primaryKey().defaultRandom(),
     oneidUserId: varchar("oneid_user_id", { length: 100 }).unique(),
@@ -123,10 +116,7 @@ export const users = pgTable("users", {
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-/**
- * Table 3: Holdings
- * Farms, households, and commercial enterprises
- */
+
 export const holdings = pgTable("holdings", {
     holdingId: serial("holding_id").primaryKey(),
     holdingName: varchar("holding_name", { length: 200 }).notNull(),
@@ -141,10 +131,7 @@ export const holdings = pgTable("holdings", {
     updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-/**
- * Table 4: Animals
- * Core registry for all animals (livestock and pets)
- */
+
 export const animals = pgTable(
     "animals",
     {
@@ -166,10 +153,7 @@ export const animals = pgTable(
     })
 );
 
-/**
- * Table 5: Chips
- * ISO 11784/11785 microchip registry
- */
+
 export const chips = pgTable(
     "chips",
     {
@@ -189,10 +173,7 @@ export const chips = pgTable(
     })
 );
 
-/**
- * Table 6: Vaccinations
- * Vaccination records with batch tracking
- */
+
 export const vaccinations = pgTable("vaccinations", {
     vaccinationId: serial("vaccination_id").primaryKey(),
     animalId: uuid("animal_id").notNull(),
@@ -208,10 +189,7 @@ export const vaccinations = pgTable("vaccinations", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
-/**
- * Table 7: Animal Movements
- * Track animal movement between holdings
- */
+
 export const animalMovements = pgTable(
     "animal_movements",
     {
@@ -231,10 +209,7 @@ export const animalMovements = pgTable(
     })
 );
 
-/**
- * Table 8: Animal Health Records
- * Health status and treatment records (TimescaleDB hypertable)
- */
+
 export const animalHealthRecords = pgTable("animal_health_records", {
     healthRecordId: serial("health_record_id").primaryKey(),
     animalId: uuid("animal_id").notNull(),
@@ -247,10 +222,7 @@ export const animalHealthRecords = pgTable("animal_health_records", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
-/**
- * Table 9: Ownership History
- * Track ownership transfers over time
- */
+
 export const ownershipHistory = pgTable(
     "ownership_history",
     {
@@ -269,10 +241,7 @@ export const ownershipHistory = pgTable(
     })
 );
 
-/**
- * Table 10: Alerts
- * Lost/found animal alerts with geospatial data
- */
+
 export const alerts = pgTable(
     "alerts",
     {
@@ -295,9 +264,9 @@ export const alerts = pgTable(
     })
 );
 
-// ============================================================================
-// RELATIONS
-// ============================================================================
+
+
+
 
 export const administrativeAreasRelations = relations(
     administrativeAreas,

@@ -2,10 +2,7 @@ import { Elysia, t } from 'elysia';
 import { lookupAnimalByChip, validateChipNumber } from '../controllers/lookupController';
 
 export const lookupRoutes = new Elysia({ prefix: '/lookup' })
-  /**
-   * Lookup animal by microchip number
-   * Returns comprehensive animal and owner information
-   */
+  
   .get(
     '/chip/:chipId',
     async ({ params: { chipId } }) => {
@@ -62,10 +59,7 @@ export const lookupRoutes = new Elysia({ prefix: '/lookup' })
     }
   )
 
-  /**
-   * Quick chip validation
-   * Returns only chip status without detailed animal information
-   */
+  
   .get(
     '/chip/:chipId/validate',
     async ({ params: { chipId } }) => {

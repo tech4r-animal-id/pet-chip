@@ -13,19 +13,14 @@ import {
 } from '../controllers/reportsController';
 import { validateMicrochip } from '../services/microchipService';
 
-/**
- * Animal Routes
- * All endpoints for animal management
- */
-export const animalRoutes = new Elysia({ prefix: '/api/v1' })
-    // ============================================================================
-    // ANIMAL ENDPOINTS
-    // ============================================================================
 
-    /**
-     * POST /api/v1/animals
-     * Register a new animal
-     */
+export const animalRoutes = new Elysia({ prefix: '/api/v1' })
+    
+    
+    
+
+
+    
     .post(
         '/animals',
         async ({ body, set }) => {
@@ -65,10 +60,7 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
         }
     )
 
-    /**
-     * GET /api/v1/animals?search={microchipNumber}
-     * Search for an animal by microchip or official ID
-     */
+    
     .get(
         '/animals',
         async ({ query, set }) => {
@@ -100,10 +92,7 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
         }
     )
 
-    /**
-     * GET /api/v1/animals/{id}
-     * Get animal by ID
-     */
+    
     .get(
         '/animals/:id',
         async ({ params, set }) => {
@@ -131,10 +120,7 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
         }
     )
 
-    /**
-     * PUT /api/v1/animals/{id}
-     * Update animal information
-     */
+    
     .put(
         '/animals/:id',
         async ({ params, body, set }) => {
@@ -173,14 +159,12 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
         }
     )
 
-    // ============================================================================
-    // MEDICAL RECORDS ENDPOINTS
-    // ============================================================================
+    
+    
+    
 
-    /**
-     * POST /api/v1/animals/{id}/medical-records
-     * Add a medical record to an animal
-     */
+
+    
     .post(
         '/animals/:id/medical-records',
         async ({ params, body, set }) => {
@@ -221,14 +205,12 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
         }
     )
 
-    // ============================================================================
-    // REPORTING ENDPOINTS
-    // ============================================================================
+    
+    
+    
 
-    /**
-     * GET /api/v1/reports/vaccination-coverage
-     * Get vaccination coverage report
-     */
+
+    
     .get(
         '/reports/vaccination-coverage',
         async ({ query }) => {
@@ -257,10 +239,7 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
         }
     )
 
-    /**
-     * GET /api/v1/reports/animal-statistics
-     * Get general animal statistics
-     */
+    
     .get(
         '/reports/animal-statistics',
         async () => {
@@ -284,10 +263,7 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
         }
     )
 
-    /**
-     * GET /api/v1/reports/recent-registrations
-     * Get recent animal registrations
-     */
+    
     .get(
         '/reports/recent-registrations',
         async ({ query }) => {
@@ -315,14 +291,12 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
         }
     )
 
-    // ============================================================================
-    // MICROCHIP VALIDATION ENDPOINT
-    // ============================================================================
+    
+    
+    
 
-    /**
-     * GET /api/v1/integrations/microchip/{microchipNumber}
-     * Validate microchip number
-     */
+
+    
     .get(
         '/integrations/microchip/:microchipNumber',
         async ({ params, set }) => {

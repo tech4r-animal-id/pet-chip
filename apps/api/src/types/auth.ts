@@ -1,7 +1,3 @@
-/**
- * Authentication Type Definitions
- */
-
 import type { userRoleEnum } from '@repo/db';
 
 export type UserRole = typeof userRoleEnum.enumValues[number];

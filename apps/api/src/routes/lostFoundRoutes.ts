@@ -8,9 +8,7 @@ import {
 } from '../controllers/lostFoundController';
 
 export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
-  /**
-   * Create a new lost/found animal case
-   */
+  
   .post(
     '/',
     async ({ body }) => {
@@ -73,9 +71,7 @@ export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
     }
   )
 
-  /**
-   * List all lost/found cases
-   */
+  
   .get(
     '/',
     async ({ query }) => {
@@ -110,9 +106,7 @@ export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
     }
   )
 
-  /**
-   * Get specific lost/found case by ID
-   */
+  
   .get(
     '/:id',
     async ({ params: { id } }) => {
@@ -142,9 +136,7 @@ export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
     }
   )
 
-  /**
-   * Update lost/found case
-   */
+  
   .patch(
     '/:id',
     async ({ params: { id }, body }) => {
@@ -188,9 +180,7 @@ export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
     }
   )
 
-  /**
-   * Delete lost/found case
-   */
+  
   .delete(
     '/:id',
     async ({ params: { id } }) => {

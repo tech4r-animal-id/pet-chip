@@ -10,18 +10,15 @@ import { lostFoundRoutes } from './routes/lostFoundRoutes';
 import { AppError } from './utils/errors';
 import { logger } from './utils/logger';
 
-/**
- * Pet-Chip Animal Registry API
- * ElysiaJS REST API for livestock and pet tracking system
- */
+
 
 const app = new Elysia()
-    // ============================================================================
-    // MIDDLEWARE & PLUGINS
-    // ============================================================================
+    
+    
+    
     .use(
         cors({
-            // Environment-specific CORS configuration
+            
             origin: process.env.NODE_ENV === 'production'
                 ? (process.env.ALLOWED_ORIGINS?.split(',') || ['https://animalid.uz'])
                 : true,
@@ -61,11 +58,11 @@ const app = new Elysia()
         })
     )
 
-    // ============================================================================
-    // GLOBAL ERROR HANDLER
-    // ============================================================================
+    
+    
+    
     .onError(({ code, error, set }) => {
-        // Handle custom application errors
+        
         if (error instanceof AppError) {
             logger.warn(`Application error: ${error.message}`, {
                 statusCode: error.statusCode,
@@ -79,7 +76,7 @@ const app = new Elysia()
             };
         }
 
-        // Handle validation errors from Elysia
+        
         if (code === 'VALIDATION') {
             logger.warn('Validation error', { details: error.message });
             set.status = 400;
@@ -89,7 +86,7 @@ const app = new Elysia()
             };
         }
 
-        // Handle not found errors
+        
         if (code === 'NOT_FOUND') {
             set.status = 404;
             return {
@@ -97,13 +94,13 @@ const app = new Elysia()
             };
         }
 
-        // Log unexpected errors
+        
         logger.error('Unexpected error occurred', error, {
             code,
             env: process.env.NODE_ENV,
         });
 
-        // Return generic error in production, detailed in development
+        
         set.status = 500;
         return {
             error: 'Internal server error',
@@ -112,9 +109,9 @@ const app = new Elysia()
         };
     })
 
-    // ============================================================================
-    // ROUTES
-    // ============================================================================
+    
+    
+    
     .get('/', () => ({
         message: 'Pet-Chip Animal Registry API',
         version: '1.0.0',
@@ -128,27 +125,27 @@ const app = new Elysia()
         uptime: process.uptime(),
     }))
 
-    // Mount authentication routes (public)
+    
     .use(authRoutes)
 
-    // Mount animal routes (will require auth in production)
+    
     .use(animalRoutes)
 
-    // Mount chip routes
+    
     .use(chipRoutes)
 
-    // Mount lookup routes (public)
+    
     .use(lookupRoutes)
 
-    // Mount owner routes
+    
     .use(ownerRoutes)
 
-    // Mount lost & found routes
+    
     .use(lostFoundRoutes)
 
-    // ============================================================================
-    // START SERVER
-    // ============================================================================
+    
+    
+    
     .listen(process.env.PORT || 3002);
 
 const serverUrl = `http://${app.server?.hostname}:${app.server?.port}`;

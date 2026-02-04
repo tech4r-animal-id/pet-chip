@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  # Primary PostgreSQL Database
+  
   postgres:
     image: postgres:16-alpine
     container_name: pet-chip-postgres
@@ -23,7 +23,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # TimescaleDB for time-series data (tracking, analytics)
+  
   timescaledb:
     image: timescale/timescaledb:latest-pg16
     container_name: pet-chip-timescaledb
@@ -45,7 +45,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Redis for caching and session management
+  
   redis:
     image: redis:7-alpine
     container_name: pet-chip-redis

@@ -8,32 +8,26 @@ import { NotFoundError, ConflictError, ValidationError } from '../utils/errors';
 import { logger } from '../utils/logger';
 import { sanitizeString, sanitizeMicrochipNumber, isValidUUID } from '../utils/sanitize';
 
-/**
- * Animal Controller
- * Handles all animal-related operations with proper error handling and transactions
- */
 
-// Type helpers for enum values
+
 type AnimalSpecies = typeof animalSpeciesEnum.enumValues[number];
 type AnimalSex = typeof animalSexEnum.enumValues[number];
 type AnimalStatus = typeof animalStatusEnum.enumValues[number];
 type HealthStatus = typeof healthStatusEnum.enumValues[number];
 
-/**
- * Register a new animal in the system with proper transaction handling
- */
+
 export async function registerAnimal(body: RegisterAnimalBody) {
-    // Sanitize microchip number
+    
     const sanitizedChipNumber = sanitizeMicrochipNumber(body.microchipNumber);
 
-    // Validate microchip number
+    
     const microchipValidation = await validateMicrochip(sanitizedChipNumber);
 
     if (!microchipValidation.isValid) {
         throw new ValidationError(`Invalid microchip: ${microchipValidation.error}`);
     }
 
-    // Check if animal with official ID already exists
+    
     const existingAnimal = await db.query.animals.findFirst({
         where: eq(animals.officialId, body.officialId),
     });
@@ -42,7 +36,7 @@ export async function registerAnimal(body: RegisterAnimalBody) {
         throw new ConflictError(`Animal with official ID ${body.officialId} already exists`);
     }
 
-    // Check if chip already registered
+    
     const existingChip = await db.query.chips.findFirst({
         where: eq(chips.chipNumber, sanitizedChipNumber),
     });
@@ -51,9 +45,9 @@ export async function registerAnimal(body: RegisterAnimalBody) {
         throw new ConflictError(`Microchip ${sanitizedChipNumber} is already registered to another animal`);
     }
 
-    // Use transaction to ensure data consistency
+    
     const result = await db.transaction(async (tx) => {
-        // Create animal record with validated data and proper type casting
+        
         const animalData = {
             officialId: sanitizeString(body.officialId),
             species: body.species as AnimalSpecies,
@@ -75,7 +69,7 @@ export async function registerAnimal(body: RegisterAnimalBody) {
             throw new Error('Failed to create animal record');
         }
 
-        // Create chip record
+        
         const chipData = {
             chipNumber: sanitizedChipNumber,
             manufacturer: microchipValidation.manufacturer || null,
@@ -92,7 +86,7 @@ export async function registerAnimal(body: RegisterAnimalBody) {
 
         const newChip = newChips[0];
 
-        // Create ownership record if owner provided
+        
         if (body.ownerId) {
             if (!isValidUUID(body.ownerId)) {
                 throw new ValidationError('Invalid owner ID format');
@@ -121,9 +115,7 @@ export async function registerAnimal(body: RegisterAnimalBody) {
     return result;
 }
 
-/**
- * Search for an animal by microchip number or official ID
- */
+
 export async function searchAnimal(params: AnimalSearchParams) {
     if (!params.search) {
         throw new ValidationError('Search parameter is required');
@@ -131,7 +123,7 @@ export async function searchAnimal(params: AnimalSearchParams) {
 
     const searchTerm = sanitizeString(params.search);
 
-    // First try to find by chip number (if it looks like a chip number)
+    
     if (/^\d{15}$/.test(searchTerm)) {
         const chip = await db.query.chips.findFirst({
             where: eq(chips.chipNumber, searchTerm),
@@ -166,7 +158,7 @@ export async function searchAnimal(params: AnimalSearchParams) {
         }
     }
 
-    // Try searching by official ID
+    
     const animal = await db.query.animals.findFirst({
         where: eq(animals.officialId, searchTerm),
         with: {
@@ -198,9 +190,7 @@ export async function searchAnimal(params: AnimalSearchParams) {
     return animal;
 }
 
-/**
- * Get animal by ID
- */
+
 export async function getAnimalById(id: string) {
     if (!isValidUUID(id)) {
         throw new ValidationError('Invalid animal ID format');
@@ -240,9 +230,7 @@ export async function getAnimalById(id: string) {
     return animal;
 }
 
-/**
- * Update animal information
- */
+
 export async function updateAnimal(id: string, updates: Partial<RegisterAnimalBody>) {
     if (!isValidUUID(id)) {
         throw new ValidationError('Invalid animal ID format');
@@ -256,7 +244,7 @@ export async function updateAnimal(id: string, updates: Partial<RegisterAnimalBo
         throw new NotFoundError(`Animal with ID ${id} not found`);
     }
 
-    // Build update object with only provided fields
+    
     const updateData: any = {};
     if (updates.species) updateData.species = updates.species as AnimalSpecies;
     if (updates.breed) updateData.breed = sanitizeString(updates.breed);
@@ -276,15 +264,13 @@ export async function updateAnimal(id: string, updates: Partial<RegisterAnimalBo
     return updated[0];
 }
 
-/**
- * Add medical record (vaccination or health checkup)
- */
+
 export async function addMedicalRecord(animalId: string, body: CreateMedicalRecordBody) {
     if (!isValidUUID(animalId)) {
         throw new ValidationError('Invalid animal ID format');
     }
 
-    // Verify animal exists
+    
     const animal = await db.query.animals.findFirst({
         where: eq(animals.animalId, animalId),
     });
@@ -293,7 +279,7 @@ export async function addMedicalRecord(animalId: string, body: CreateMedicalReco
         throw new NotFoundError(`Animal with ID ${animalId} not found`);
     }
 
-    // Create health record with proper health status type casting
+    
     const recordData = {
         animalId,
         recordDate: body.procedureDate,

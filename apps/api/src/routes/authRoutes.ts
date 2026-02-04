@@ -1,17 +1,9 @@
-/**
- * Authentication Routes
- * Handles user registration, login, and token refresh
- */
-
 import { Elysia, t } from 'elysia';
 import { loginUser, registerUser, refreshAccessToken } from '../services/authService';
 import { logger } from '../utils/logger';
 
 export const authRoutes = new Elysia({ prefix: '/api/v1/auth' })
-    /**
-     * POST /api/v1/auth/login
-     * User login
-     */
+    
     .post(
         '/login',
         async ({ body, set }) => {
@@ -42,10 +34,7 @@ export const authRoutes = new Elysia({ prefix: '/api/v1/auth' })
         }
     )
 
-    /**
-     * POST /api/v1/auth/register
-     * User registration
-     */
+    
     .post(
         '/register',
         async ({ body, set }) => {
@@ -88,10 +77,7 @@ export const authRoutes = new Elysia({ prefix: '/api/v1/auth' })
         }
     )
 
-    /**
-     * POST /api/v1/auth/refresh
-     * Refresh access token
-     */
+    
     .post(
         '/refresh',
         async ({ body, set }) => {

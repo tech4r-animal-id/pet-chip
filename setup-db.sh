@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
-# Quick Database Setup Script
-# This script pushes the database schema to PostgreSQL
+
 
 echo "🔍 Checking database connection..."
 
-# Check if DATABASE_URL is set
+
 if [ -z "$DATABASE_URL" ]; then
     echo "⚠️  DATABASE_URL not set. Using default..."
     export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/petchip"

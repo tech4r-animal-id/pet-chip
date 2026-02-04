@@ -1,8 +1,3 @@
-/**
- * Logger Utility
- * Simple logging with different levels
- */
-
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
 class Logger {

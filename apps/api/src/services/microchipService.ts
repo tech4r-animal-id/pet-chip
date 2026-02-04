@@ -1,26 +1,17 @@
 import type { MicrochipValidationResponse } from '../types/api';
 
-/**
- * ISO 11784/11785 Microchip Validation Service
- * 
- * This service validates microchip numbers against ISO standards
- * and provides mock integration with microchip manufacturers
- */
 
-// ISO 11784/11785 format: 15 digits
+
+
+
 const ISO_MICROCHIP_REGEX = /^\d{15}$/;
 
-/**
- * Validates microchip number format according to ISO 11784/11785
- */
+
 export function validateMicrochipFormat(microchipNumber: string): boolean {
     return ISO_MICROCHIP_REGEX.test(microchipNumber);
 }
 
-/**
- * Mock microchip manufacturer database
- * In production, this would call external APIs
- */
+
 const mockMicrochipDatabase: Record<string, MicrochipValidationResponse> = {
     '981200012345678': {
         microchipNumber: '981200012345678',
@@ -45,15 +36,11 @@ const mockMicrochipDatabase: Record<string, MicrochipValidationResponse> = {
     },
 };
 
-/**
- * Validates microchip against manufacturer registry
- * @param microchipNumber - 15-digit ISO microchip number
- * @returns Validation response with manufacturer details
- */
+
 export async function validateMicrochip(
     microchipNumber: string
 ): Promise<MicrochipValidationResponse> {
-    // Validate format first
+    
     if (!validateMicrochipFormat(microchipNumber)) {
         return {
             microchipNumber,
@@ -62,17 +49,17 @@ export async function validateMicrochip(
         };
     }
 
-    // Simulate API delay
+    
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Check mock database
+    
     const chipData = mockMicrochipDatabase[microchipNumber];
 
     if (chipData) {
         return chipData;
     }
 
-    // For demo purposes, accept any valid format but mark as unregistered
+    
     return {
         microchipNumber,
         isValid: true,
@@ -81,10 +68,7 @@ export async function validateMicrochip(
     };
 }
 
-/**
- * Extract manufacturer code from microchip number
- * First 3 digits indicate country/manufacturer
- */
+
 export function getMicrochipManufacturerCode(microchipNumber: string): string {
     if (validateMicrochipFormat(microchipNumber)) {
         return microchipNumber.substring(0, 3);
@@ -92,10 +76,7 @@ export function getMicrochipManufacturerCode(microchipNumber: string): string {
     return '';
 }
 
-/**
- * Get country from microchip code
- * Based on ISO 11784/11785 country codes
- */
+
 export function getMicrochipCountry(microchipNumber: string): string {
     const code = getMicrochipManufacturerCode(microchipNumber);
 
@@ -107,7 +88,7 @@ export function getMicrochipCountry(microchipNumber: string): string {
         '901': 'United States',
         '953': 'Germany',
         '956': 'China',
-        // Add more as needed
+        
     };
 
     return countryCodes[code] || 'Unknown';

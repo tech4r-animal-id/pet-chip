@@ -8,9 +8,7 @@ import {
 } from '../controllers/ownerController';
 
 export const ownerRoutes = new Elysia({ prefix: '/owners' })
-  /**
-   * Register a new owner (holding)
-   */
+  
   .post(
     '/',
     async ({ body }) => {
@@ -76,9 +74,7 @@ export const ownerRoutes = new Elysia({ prefix: '/owners' })
     }
   )
 
-  /**
-   * List all owners with optional filters
-   */
+  
   .get(
     '/',
     async ({ query }) => {
@@ -118,9 +114,7 @@ export const ownerRoutes = new Elysia({ prefix: '/owners' })
     }
   )
 
-  /**
-   * Get owner by ID
-   */
+  
   .get(
     '/:id',
     async ({ params: { id } }) => {
@@ -149,9 +143,7 @@ export const ownerRoutes = new Elysia({ prefix: '/owners' })
     }
   )
 
-  /**
-   * Update owner information (partial update)
-   */
+  
   .patch(
     '/:id',
     async ({ params: { id }, body }) => {
@@ -213,9 +205,7 @@ export const ownerRoutes = new Elysia({ prefix: '/owners' })
     }
   )
 
-  /**
-   * Delete owner (soft delete)
-   */
+  
   .delete(
     '/:id',
     async ({ params: { id } }) => {

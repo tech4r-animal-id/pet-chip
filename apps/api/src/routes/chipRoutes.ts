@@ -1,19 +1,13 @@
 import { Elysia, t } from 'elysia';
 import { assignChipToAnimal, getChipByNumber, deactivateChip } from '../controllers/chipController';
 
-/**
- * Chip Routes
- * All endpoints for microchip management
- */
-export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
-    // ============================================================================
-    // CHIP ENDPOINTS
-    // ============================================================================
 
-    /**
-     * POST /api/v1/chips/assign
-     * Assign a microchip to an animal
-     */
+export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
+    
+    
+    
+
+    
     .post(
         '/assign',
         async ({ body }) => {
@@ -58,10 +52,7 @@ export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
         }
     )
 
-    /**
-     * GET /api/v1/chips/:chipNumber
-     * Get chip details by chip number
-     */
+    
     .get(
         '/:chipNumber',
         async ({ params }) => {
@@ -82,10 +73,7 @@ export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
         }
     )
 
-    /**
-     * POST /api/v1/chips/:chipNumber/deactivate
-     * Deactivate a microchip
-     */
+    
     .post(
         '/:chipNumber/deactivate',
         async ({ params, body }) => {

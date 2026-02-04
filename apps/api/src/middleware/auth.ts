@@ -1,8 +1,3 @@
-/**
- * Authentication Middleware
- * Verifies JWT tokens and attaches user to request context
- */
-
 import type { Context } from 'elysia';
 import { verifyAccessToken } from '../services/authService';
 import type { JWTPayload } from '../types/auth';
@@ -13,9 +8,7 @@ export interface AuthContext {
     user: JWTPayload;
 }
 
-/**
- * Extract Bearer token from Authorization header
- */
+
 function extractBearerToken(authHeader: string | undefined): string | null {
     if (!authHeader) return null;
 
@@ -27,10 +20,7 @@ function extractBearerToken(authHeader: string | undefined): string | null {
     return parts[1];
 }
 
-/**
- * Authentication middleware
- * Can be used with Elysia's derive or as a guard
- */
+
 export async function authenticate(context: any): Promise<JWTPayload> {
     const authHeader = context.headers?.authorization || context.request?.headers?.get('authorization');
 
@@ -50,9 +40,7 @@ export async function authenticate(context: any): Promise<JWTPayload> {
     }
 }
 
-/**
- * Role-based authorization middleware
- */
+
 export function requireRole(...allowedRoles: string[]) {
     return async (context: any) => {
         const user = await authenticate(context);

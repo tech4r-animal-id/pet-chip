@@ -1,4 +1,3 @@
-// API Response Types
 export interface ApiResponse<T> {
     message?: string;
     data?: T;
@@ -23,7 +22,7 @@ export interface VaccinationCoverageParams {
     endDate?: string;
 }
 
-// Request Body Types
+
 export interface RegisterAnimalBody {
     microchipNumber: string;
     species: string;
