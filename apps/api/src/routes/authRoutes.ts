@@ -1,25 +1,16 @@
 import { Elysia, t } from 'elysia';
 import { loginUser, registerUser, refreshAccessToken } from '../services/authService';
-import { logger } from '../utils/logger';
 
 export const authRoutes = new Elysia({ prefix: '/api/v1/auth' })
     
     .post(
         '/login',
-        async ({ body, set }) => {
-            try {
-                const result = await loginUser(body);
-                return {
-                    message: 'Login successful',
-                    ...result,
-                };
-            } catch (error: any) {
-                logger.error('Login failed', error);
-                set.status = error.statusCode || 500;
-                return {
-                    error: error.message || 'Login failed',
-                };
-            }
+        async ({ body }) => {
+            const result = await loginUser(body);
+            return {
+                message: 'Login successful',
+                ...result,
+            };
         },
         {
             body: t.Object({
@@ -38,20 +29,12 @@ export const authRoutes = new Elysia({ prefix: '/api/v1/auth' })
     .post(
         '/register',
         async ({ body, set }) => {
-            try {
-                const result = await registerUser(body);
-                set.status = 201;
-                return {
-                    message: 'Registration successful',
-                    ...result,
-                };
-            } catch (error: any) {
-                logger.error('Registration failed', error);
-                set.status = error.statusCode || 500;
-                return {
-                    error: error.message || 'Registration failed',
-                };
-            }
+            const result = await registerUser(body);
+            set.status = 201;
+            return {
+                message: 'Registration successful',
+                ...result,
+            };
         },
         {
             body: t.Object({
@@ -60,19 +43,12 @@ export const authRoutes = new Elysia({ prefix: '/api/v1/auth' })
                 password: t.String({ minLength: 6 }),
                 fullName: t.Optional(t.String()),
                 phoneNumber: t.Optional(t.String()),
-                role: t.Union([
-                    t.Literal('Veterinarian'),
-                    t.Literal('Government Officer'),
-                    t.Literal('Farmer'),
-                    t.Literal('System Admin'),
-                    t.Literal('Citizen'),
-                ]),
                 areaId: t.Optional(t.Number()),
             }),
             detail: {
                 tags: ['Authentication'],
                 summary: 'User registration',
-                description: 'Register a new user account',
+                description: 'Register a new user account (role defaults to Citizen)',
             },
         }
     )
@@ -80,20 +56,12 @@ export const authRoutes = new Elysia({ prefix: '/api/v1/auth' })
     
     .post(
         '/refresh',
-        async ({ body, set }) => {
-            try {
-                const result = await refreshAccessToken(body.refreshToken);
-                return {
-                    message: 'Token refreshed successfully',
-                    ...result,
-                };
-            } catch (error: any) {
-                logger.error('Token refresh failed', error);
-                set.status = error.statusCode || 500;
-                return {
-                    error: error.message || 'Token refresh failed',
-                };
-            }
+        async ({ body }) => {
+            const result = await refreshAccessToken(body.refreshToken);
+            return {
+                message: 'Token refreshed successfully',
+                ...result,
+            };
         },
         {
             body: t.Object({

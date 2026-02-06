@@ -6,12 +6,15 @@ import {
   listOwners,
   deleteOwner,
 } from '../controllers/ownerController';
+import { authenticate } from '../middleware/auth';
 
-export const ownerRoutes = new Elysia({ prefix: '/owners' })
+const ownerRouter = new Elysia()
   
   .post(
     '/',
-    async ({ body }) => {
+    async (context) => {
+      await authenticate(context);
+      const { body } = context;
       const result = await registerOwner(body);
       return result;
     },
@@ -77,7 +80,9 @@ export const ownerRoutes = new Elysia({ prefix: '/owners' })
   
   .get(
     '/',
-    async ({ query }) => {
+    async (context) => {
+      await authenticate(context);
+      const { query } = context;
       const filters: any = {};
       if (query.holdingType) filters.holdingType = query.holdingType;
       if (query.status) filters.status = query.status;
@@ -117,7 +122,9 @@ export const ownerRoutes = new Elysia({ prefix: '/owners' })
   
   .get(
     '/:id',
-    async ({ params: { id } }) => {
+    async (context) => {
+      await authenticate(context);
+      const { params: { id } } = context;
       const result = await getOwnerById(parseInt(id));
       return result;
     },
@@ -146,7 +153,9 @@ export const ownerRoutes = new Elysia({ prefix: '/owners' })
   
   .patch(
     '/:id',
-    async ({ params: { id }, body }) => {
+    async (context) => {
+      await authenticate(context);
+      const { params: { id }, body } = context;
       const result = await updateOwner(parseInt(id), body);
       return result;
     },
@@ -208,7 +217,9 @@ export const ownerRoutes = new Elysia({ prefix: '/owners' })
   
   .delete(
     '/:id',
-    async ({ params: { id } }) => {
+    async (context) => {
+      await authenticate(context);
+      const { params: { id } } = context;
       const result = await deleteOwner(parseInt(id));
       return result;
     },
@@ -233,3 +244,6 @@ export const ownerRoutes = new Elysia({ prefix: '/owners' })
       },
     }
   );
+
+export const ownerRoutes = new Elysia({ prefix: '/api/v1/owners' }).use(ownerRouter);
+export const ownerRoutesLegacy = new Elysia({ prefix: '/owners' }).use(ownerRouter);

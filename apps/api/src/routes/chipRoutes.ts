@@ -1,5 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { assignChipToAnimal, getChipByNumber, deactivateChip } from '../controllers/chipController';
+import { authenticate } from '../middleware/auth';
 
 
 export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
@@ -10,15 +11,17 @@ export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
     
     .post(
         '/assign',
-        async ({ body }) => {
+        async (context) => {
+            await authenticate(context);
+            const { body } = context;
             const result = await assignChipToAnimal(body);
             return result;
         },
         {
             body: t.Object({
                 chipNumber: t.String({
-                    minLength: 10,
-                    maxLength: 50,
+                    minLength: 15,
+                    maxLength: 15,
                     description: 'Microchip number (ISO 11784/11785 format)',
                 }),
                 animalId: t.String({
@@ -55,7 +58,9 @@ export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
     
     .get(
         '/:chipNumber',
-        async ({ params }) => {
+        async (context) => {
+            await authenticate(context);
+            const { params } = context;
             const chip = await getChipByNumber(params.chipNumber);
             return chip;
         },
@@ -63,6 +68,8 @@ export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
             params: t.Object({
                 chipNumber: t.String({
                     description: 'Microchip number to lookup',
+                    minLength: 15,
+                    maxLength: 15,
                 }),
             }),
             detail: {
@@ -76,7 +83,9 @@ export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
     
     .post(
         '/:chipNumber/deactivate',
-        async ({ params, body }) => {
+        async (context) => {
+            await authenticate(context);
+            const { params, body } = context;
             const result = await deactivateChip(params.chipNumber, body?.reason);
             return result;
         },
@@ -84,6 +93,8 @@ export const chipRoutes = new Elysia({ prefix: '/api/v1/chips' })
             params: t.Object({
                 chipNumber: t.String({
                     description: 'Microchip number to deactivate',
+                    minLength: 15,
+                    maxLength: 15,
                 }),
             }),
             body: t.Optional(

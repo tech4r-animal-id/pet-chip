@@ -1,8 +1,8 @@
 import { db } from '@repo/db';
 import { chips, animals, holdings } from '@repo/db';
 import { eq } from 'drizzle-orm';
-import { NotFoundError } from '../utils/errors';
-import { sanitizeString } from '../utils/sanitize';
+import { NotFoundError, ForbiddenError } from '../utils/errors';
+import { sanitizeMicrochipNumber } from '../utils/sanitize';
 
 /**
  * Lookup animal by microchip number
@@ -10,11 +10,7 @@ import { sanitizeString } from '../utils/sanitize';
  */
 export async function lookupAnimalByChip(chipNumber: string) {
   // Sanitize and validate chip number
-  const sanitizedChipNumber = sanitizeString(chipNumber);
-  
-  if (!sanitizedChipNumber || sanitizedChipNumber.length < 9) {
-    throw new Error('Invalid chip number format');
-  }
+  const sanitizedChipNumber = sanitizeMicrochipNumber(chipNumber);
 
   // Find the chip with its associated animal
   const chipRecord = await db
@@ -31,7 +27,7 @@ export async function lookupAnimalByChip(chipNumber: string) {
 
   // Check if chip is active
   if (!chip.isActive) {
-    throw new Error(`This chip is inactive. Please contact support.`);
+    throw new ForbiddenError('This chip is inactive. Please contact support.');
   }
 
   if (!chip.animalId) {
@@ -99,12 +95,13 @@ export async function lookupAnimalByChip(chipNumber: string) {
  * Returns only basic chip status without animal details
  */
 export async function validateChipNumber(chipNumber: string) {
-  const sanitizedChipNumber = sanitizeString(chipNumber);
-  
-  if (!sanitizedChipNumber || sanitizedChipNumber.length < 9) {
+  let sanitizedChipNumber: string;
+  try {
+    sanitizedChipNumber = sanitizeMicrochipNumber(chipNumber);
+  } catch (error: any) {
     return {
       valid: false,
-      message: 'Invalid chip number format',
+      message: error?.message || 'Invalid chip number format',
     };
   }
 

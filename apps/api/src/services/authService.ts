@@ -4,9 +4,9 @@ import { db } from '@repo/db';
 import { users } from '@repo/db';
 import { eq } from 'drizzle-orm';
 import type { JWTPayload, AuthUser, LoginRequest, RegisterRequest } from '../types/auth';
-import { UnauthorizedError, ConflictError, NotFoundError } from '../utils/errors';
+import { UnauthorizedError, ConflictError, NotFoundError, InternalServerError } from '../utils/errors';
 import { logger } from '../utils/logger';
-import { sanitizeEmail, sanitizeString, isValidEmail } from '../utils/sanitize';
+import { sanitizeEmail, sanitizeString, sanitizePhone, isValidEmail } from '../utils/sanitize';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
@@ -85,10 +85,16 @@ export async function loginUser(credentials: LoginRequest): Promise<{ accessToke
         throw new UnauthorizedError('Account is inactive');
     }
 
-    
-    
-    
-    
+    if (!user.passwordHash) {
+        logger.warn('Login attempt for user without password hash', { userId: user.userId });
+        throw new UnauthorizedError('Invalid email or password');
+    }
+
+    const isPasswordValid = await comparePassword(password, user.passwordHash);
+    if (!isPasswordValid) {
+        logger.warn('Login attempt with invalid password', { userId: user.userId });
+        throw new UnauthorizedError('Invalid email or password');
+    }
 
     const authUser: AuthUser = {
         userId: user.userId,
@@ -122,6 +128,7 @@ export async function registerUser(data: RegisterRequest): Promise<{ accessToken
     const sanitizedEmail = sanitizeEmail(data.email);
     const sanitizedUsername = sanitizeString(data.username);
     const sanitizedFullName = sanitizeString(data.fullName || '');
+    const sanitizedPhone = sanitizePhone(data.phoneNumber || '');
 
     
     if (!isValidEmail(sanitizedEmail)) {
@@ -157,8 +164,9 @@ export async function registerUser(data: RegisterRequest): Promise<{ accessToken
             username: sanitizedUsername,
             email: sanitizedEmail,
             fullName: sanitizedFullName || null,
-            phoneNumber: data.phoneNumber || null,
-            userRole: data.role,
+            phoneNumber: sanitizedPhone || null,
+            passwordHash,
+            userRole: 'Citizen',
             areaId: data.areaId || null,
             status: 'Active',
         })
@@ -166,7 +174,7 @@ export async function registerUser(data: RegisterRequest): Promise<{ accessToken
 
     const newUser = newUsers[0];
     if (!newUser) {
-        throw new Error('Failed to create user');
+        throw new InternalServerError('Failed to create user');
     }
 
     const authUser: AuthUser = {

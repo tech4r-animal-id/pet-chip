@@ -4,15 +4,15 @@ import { cors } from '@elysiajs/cors';
 import { animalRoutes } from './routes/animalRoutes';
 import { authRoutes } from './routes/authRoutes';
 import { chipRoutes } from './routes/chipRoutes';
-import { lookupRoutes } from './routes/lookupRoutes';
-import { ownerRoutes } from './routes/ownerRoutes';
-import { lostFoundRoutes } from './routes/lostFoundRoutes';
+import { lookupRoutes, lookupRoutesLegacy } from './routes/lookupRoutes';
+import { ownerRoutes, ownerRoutesLegacy } from './routes/ownerRoutes';
+import { lostFoundRoutes, lostFoundRoutesLegacy } from './routes/lostFoundRoutes';
 import { AppError } from './utils/errors';
 import { logger } from './utils/logger';
 
 
 
-const app = new Elysia()
+export const app = new Elysia()
     
     
     
@@ -137,32 +137,42 @@ const app = new Elysia()
     
     .use(lookupRoutes)
 
+    .use(lookupRoutesLegacy)
+
     
     .use(ownerRoutes)
+
+    .use(ownerRoutesLegacy)
 
     
     .use(lostFoundRoutes)
 
-    
-    
-    
-    .listen(process.env.PORT || 3002);
+    .use(lostFoundRoutesLegacy)
 
-const serverUrl = `http://${app.server?.hostname}:${app.server?.port}`;
+    
+    
+    
+const shouldListen = process.env.NODE_ENV !== 'test';
 
-logger.info(`
-┌─────────────────────────────────────────────────┐
-│  🦊 Pet-Chip API Server                        │
-│                                                 │
-│  Running at: ${serverUrl}          │
-│  Documentation: ${serverUrl}/swagger     │
-│  Environment: ${process.env.NODE_ENV || 'development'}                   │
-│                                                 │
-│  ✅ Authentication enabled                     │
-│  ✅ Error logging active                       │
-│  ✅ Input sanitization enabled                 │
-│  ✅ Database transactions enabled              │
-└─────────────────────────────────────────────────┘
+if (shouldListen) {
+    app.listen(process.env.PORT || 3002);
+
+    const serverUrl = `http://${app.server?.hostname}:${app.server?.port}`;
+
+    logger.info(`
++--------------------------------------------------------------+
+| Pet-Chip API Server                                          |
+|                                                              |
+| Running at: ${serverUrl}                                     |
+| Documentation: ${serverUrl}/swagger                          |
+| Environment: ${process.env.NODE_ENV || 'development'}        |
+|                                                              |
+| Authentication enabled                                       |
+| Error logging active                                         |
+| Input sanitization enabled                                   |
+| Database transactions enabled                                |
++--------------------------------------------------------------+
 `);
+}
 
 export type App = typeof app;

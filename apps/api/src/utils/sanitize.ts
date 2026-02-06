@@ -1,4 +1,5 @@
 import validator from 'validator';
+import { ValidationError } from './errors';
 
 
 export function sanitizeString(input: string | undefined | null): string {
@@ -21,10 +22,10 @@ export function sanitizePhone(phone: string | undefined | null): string {
 
 
 export function sanitizeMicrochipNumber(chipNumber: string | undefined | null): string {
-    if (!chipNumber) throw new Error('Microchip number is required');
+    if (!chipNumber) throw new ValidationError('Microchip number is required');
     const sanitized = chipNumber.replace(/\D/g, '');
     if (sanitized.length !== 15) {
-        throw new Error('Microchip number must be exactly 15 digits');
+        throw new ValidationError('Microchip number must be exactly 15 digits');
     }
     return sanitized;
 }

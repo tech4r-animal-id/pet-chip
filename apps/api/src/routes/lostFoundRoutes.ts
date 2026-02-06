@@ -6,12 +6,15 @@ import {
   updateLostFoundCase,
   deleteLostFoundCase,
 } from '../controllers/lostFoundController';
+import { authenticate } from '../middleware/auth';
 
-export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
+const lostFoundRouter = new Elysia()
   
   .post(
     '/',
-    async ({ body }) => {
+    async (context) => {
+      await authenticate(context);
+      const { body } = context;
       const result = await createLostFoundCase(body);
       return result;
     },
@@ -74,7 +77,9 @@ export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
   
   .get(
     '/',
-    async ({ query }) => {
+    async (context) => {
+      await authenticate(context);
+      const { query } = context;
       const filters: any = {};
       if (query.status) filters.status = query.status;
       if (query.animalId) filters.animalId = query.animalId;
@@ -109,7 +114,9 @@ export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
   
   .get(
     '/:id',
-    async ({ params: { id } }) => {
+    async (context) => {
+      await authenticate(context);
+      const { params: { id } } = context;
       const result = await getLostFoundCase(id);
       return result;
     },
@@ -139,7 +146,9 @@ export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
   
   .patch(
     '/:id',
-    async ({ params: { id }, body }) => {
+    async (context) => {
+      await authenticate(context);
+      const { params: { id }, body } = context;
       const result = await updateLostFoundCase(id, body);
       return result;
     },
@@ -183,7 +192,9 @@ export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
   
   .delete(
     '/:id',
-    async ({ params: { id } }) => {
+    async (context) => {
+      await authenticate(context);
+      const { params: { id } } = context;
       const result = await deleteLostFoundCase(id);
       return result;
     },
@@ -209,3 +220,6 @@ export const lostFoundRoutes = new Elysia({ prefix: '/lostfound' })
       },
     }
   );
+
+export const lostFoundRoutes = new Elysia({ prefix: '/api/v1/lostfound' }).use(lostFoundRouter);
+export const lostFoundRoutesLegacy = new Elysia({ prefix: '/lostfound' }).use(lostFoundRouter);

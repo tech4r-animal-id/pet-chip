@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { lookupAnimalByChip, validateChipNumber } from '../controllers/lookupController';
 
-export const lookupRoutes = new Elysia({ prefix: '/lookup' })
+const lookupRouter = new Elysia()
   
   .get(
     '/chip/:chipId',
@@ -12,8 +12,8 @@ export const lookupRoutes = new Elysia({ prefix: '/lookup' })
     {
       params: t.Object({
         chipId: t.String({
-          description: 'Microchip number (9-15 digits)',
-          minLength: 9,
+          description: 'Microchip number (15 digits)',
+          minLength: 15,
           maxLength: 15,
         }),
       }),
@@ -70,7 +70,7 @@ export const lookupRoutes = new Elysia({ prefix: '/lookup' })
       params: t.Object({
         chipId: t.String({
           description: 'Microchip number to validate',
-          minLength: 9,
+          minLength: 15,
           maxLength: 15,
         }),
       }),
@@ -114,3 +114,6 @@ export const lookupRoutes = new Elysia({ prefix: '/lookup' })
       },
     }
   );
+
+export const lookupRoutes = new Elysia({ prefix: '/api/v1/lookup' }).use(lookupRouter);
+export const lookupRoutesLegacy = new Elysia({ prefix: '/lookup' }).use(lookupRouter);

@@ -29,7 +29,6 @@ export interface RegisterRequest {
     password: string;
     fullName?: string;
     phoneNumber?: string;
-    role: UserRole;
     areaId?: number;
 }
 

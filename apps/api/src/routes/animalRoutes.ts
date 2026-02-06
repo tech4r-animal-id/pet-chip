@@ -12,6 +12,7 @@ import {
     getRecentRegistrations,
 } from '../controllers/reportsController';
 import { validateMicrochip } from '../services/microchipService';
+import { authenticate } from '../middleware/auth';
 
 
 export const animalRoutes = new Elysia({ prefix: '/api/v1' })
@@ -23,20 +24,15 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
     
     .post(
         '/animals',
-        async ({ body, set }) => {
-            try {
-                const animal = await registerAnimal(body);
-                set.status = 201;
-                return {
-                    message: 'Animal registered successfully',
-                    data: animal,
-                };
-            } catch (error: any) {
-                set.status = 400;
-                return {
-                    error: error.message || 'Failed to register animal',
-                };
-            }
+        async (context) => {
+            await authenticate(context);
+            const { body, set } = context;
+            const animal = await registerAnimal(body);
+            set.status = 201;
+            return {
+                message: 'Animal registered successfully',
+                data: animal,
+            };
         },
         {
             body: t.Object({
@@ -63,22 +59,17 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
     
     .get(
         '/animals',
-        async ({ query, set }) => {
-            try {
-                const animal = await searchAnimal(query);
-                return {
-                    data: {
-                        animal,
-                        owner: animal.ownershipHistory?.[0]?.user || null,
-                        medicalRecords: animal.healthRecords || [],
-                    },
-                };
-            } catch (error: any) {
-                set.status = error.message.includes('not found') ? 404 : 400;
-                return {
-                    error: error.message || 'Search failed',
-                };
-            }
+        async (context) => {
+            await authenticate(context);
+            const { query } = context;
+            const animal = await searchAnimal(query);
+            return {
+                data: {
+                    animal,
+                    owner: animal.ownershipHistory?.[0]?.user || null,
+                    medicalRecords: animal.healthRecords || [],
+                },
+            };
         },
         {
             query: t.Object({
@@ -95,18 +86,13 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
     
     .get(
         '/animals/:id',
-        async ({ params, set }) => {
-            try {
-                const animal = await getAnimalById(params.id);
-                return {
-                    data: animal,
-                };
-            } catch (error: any) {
-                set.status = 404;
-                return {
-                    error: error.message || 'Animal not found',
-                };
-            }
+        async (context) => {
+            await authenticate(context);
+            const { params } = context;
+            const animal = await getAnimalById(params.id);
+            return {
+                data: animal,
+            };
         },
         {
             params: t.Object({
@@ -123,19 +109,14 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
     
     .put(
         '/animals/:id',
-        async ({ params, body, set }) => {
-            try {
-                const updated = await updateAnimal(params.id, body);
-                return {
-                    message: 'Animal updated successfully',
-                    data: updated,
-                };
-            } catch (error: any) {
-                set.status = error.message.includes('not found') ? 404 : 400;
-                return {
-                    error: error.message || 'Update failed',
-                };
-            }
+        async (context) => {
+            await authenticate(context);
+            const { params, body } = context;
+            const updated = await updateAnimal(params.id, body);
+            return {
+                message: 'Animal updated successfully',
+                data: updated,
+            };
         },
         {
             params: t.Object({
@@ -167,20 +148,15 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
     
     .post(
         '/animals/:id/medical-records',
-        async ({ params, body, set }) => {
-            try {
-                const record = await addMedicalRecord(params.id, body);
-                set.status = 201;
-                return {
-                    message: 'Medical record added successfully',
-                    data: record,
-                };
-            } catch (error: any) {
-                set.status = error.message.includes('not found') ? 404 : 400;
-                return {
-                    error: error.message || 'Failed to add medical record',
-                };
-            }
+        async (context) => {
+            await authenticate(context);
+            const { params, body, set } = context;
+            const record = await addMedicalRecord(params.id, body);
+            set.status = 201;
+            return {
+                message: 'Medical record added successfully',
+                data: record,
+            };
         },
         {
             params: t.Object({
@@ -213,17 +189,13 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
     
     .get(
         '/reports/vaccination-coverage',
-        async ({ query }) => {
-            try {
-                const report = await getVaccinationCoverage(query);
-                return {
-                    data: report,
-                };
-            } catch (error: any) {
-                return {
-                    error: error.message || 'Failed to generate report',
-                };
-            }
+        async (context) => {
+            await authenticate(context);
+            const { query } = context;
+            const report = await getVaccinationCoverage(query);
+            return {
+                data: report,
+            };
         },
         {
             query: t.Object({
@@ -242,17 +214,12 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
     
     .get(
         '/reports/animal-statistics',
-        async () => {
-            try {
-                const stats = await getAnimalStatistics();
-                return {
-                    data: stats,
-                };
-            } catch (error: any) {
-                return {
-                    error: error.message || 'Failed to get statistics',
-                };
-            }
+        async (context) => {
+            await authenticate(context);
+            const stats = await getAnimalStatistics();
+            return {
+                data: stats,
+            };
         },
         {
             detail: {
@@ -266,18 +233,14 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
     
     .get(
         '/reports/recent-registrations',
-        async ({ query }) => {
-            try {
-                const limit = query.limit || 10;
-                const recent = await getRecentRegistrations(limit);
-                return {
-                    data: recent,
-                };
-            } catch (error: any) {
-                return {
-                    error: error.message || 'Failed to get recent registrations',
-                };
-            }
+        async (context) => {
+            await authenticate(context);
+            const { query } = context;
+            const limit = query.limit || 10;
+            const recent = await getRecentRegistrations(limit);
+            return {
+                data: recent,
+            };
         },
         {
             query: t.Object({
@@ -299,19 +262,14 @@ export const animalRoutes = new Elysia({ prefix: '/api/v1' })
     
     .get(
         '/integrations/microchip/:microchipNumber',
-        async ({ params, set }) => {
-            try {
-                const validation = await validateMicrochip(params.microchipNumber);
-                if (!validation.isValid) {
-                    set.status = 400;
-                }
-                return validation;
-            } catch (error: any) {
-                set.status = 500;
-                return {
-                    error: error.message || 'Validation failed',
-                };
+        async (context) => {
+            await authenticate(context);
+            const { params, set } = context;
+            const validation = await validateMicrochip(params.microchipNumber);
+            if (!validation.isValid) {
+                set.status = 400;
             }
+            return validation;
         },
         {
             params: t.Object({

@@ -4,7 +4,7 @@ import type { animalSpeciesEnum, animalSexEnum, animalStatusEnum, healthStatusEn
 import { eq, desc, and, gte, lte, sql } from 'drizzle-orm';
 import type { RegisterAnimalBody, CreateMedicalRecordBody, AnimalSearchParams } from '../types/api';
 import { validateMicrochip } from '../services/microchipService';
-import { NotFoundError, ConflictError, ValidationError } from '../utils/errors';
+import { NotFoundError, ConflictError, ValidationError, InternalServerError } from '../utils/errors';
 import { logger } from '../utils/logger';
 import { sanitizeString, sanitizeMicrochipNumber, isValidUUID } from '../utils/sanitize';
 
@@ -66,25 +66,42 @@ export async function registerAnimal(body: RegisterAnimalBody) {
 
         const newAnimal = newAnimals[0];
         if (!newAnimal) {
-            throw new Error('Failed to create animal record');
+            throw new InternalServerError('Failed to create animal record');
         }
 
         
-        const chipData = {
-            chipNumber: sanitizedChipNumber,
-            manufacturer: microchipValidation.manufacturer || null,
-            animalId: newAnimal.animalId,
-            implantationDate: microchipValidation.implantDate || null,
-            holdingId: body.currentHoldingId,
-            isActive: true,
-        };
+        let chipRecord;
 
-        const newChips = await tx
-            .insert(chips)
-            .values(chipData)
-            .returning();
+        if (existingChip) {
+            const updatedChips = await tx
+                .update(chips)
+                .set({
+                    animalId: newAnimal.animalId,
+                    manufacturer: microchipValidation.manufacturer || existingChip.manufacturer || null,
+                    implantationDate: microchipValidation.implantDate || existingChip.implantationDate || null,
+                    holdingId: body.currentHoldingId,
+                    isActive: true,
+                    updatedAt: new Date(),
+                })
+                .where(eq(chips.chipId, existingChip.chipId))
+                .returning();
 
-        const newChip = newChips[0];
+            chipRecord = updatedChips[0];
+        } else {
+            const newChips = await tx
+                .insert(chips)
+                .values({
+                    chipNumber: sanitizedChipNumber,
+                    manufacturer: microchipValidation.manufacturer || null,
+                    animalId: newAnimal.animalId,
+                    implantationDate: microchipValidation.implantDate || null,
+                    holdingId: body.currentHoldingId,
+                    isActive: true,
+                })
+                .returning();
+
+            chipRecord = newChips[0];
+        }
 
         
         if (body.ownerId) {
@@ -108,7 +125,7 @@ export async function registerAnimal(body: RegisterAnimalBody) {
         return {
             ...newAnimal,
             microchipNumber: sanitizedChipNumber,
-            chip: newChip,
+            chip: chipRecord,
         };
     });
 

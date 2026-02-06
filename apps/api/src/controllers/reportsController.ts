@@ -1,5 +1,5 @@
 import { db } from '@repo/db';
-import { animals, vaccinations, animalHealthRecords, holdings } from '@repo/db';
+import { animals, animalHealthRecords, holdings } from '@repo/db';
 import { sql, eq, and, count } from 'drizzle-orm';
 import type { VaccinationCoverageParams } from '../types/api';
 
